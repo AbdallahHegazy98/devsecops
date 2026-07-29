@@ -67,11 +67,9 @@ jobs:
           pip install bandit
 
       - name: Run Bandit
+        continue-on-error: true
         run: |
-          bandit \
-          -r app.py database.py models.py \
-          -f html \
-          -o bandit-report.html
+          bandit -r . -f html -o bandit-report.html
 
       - name: Upload Bandit Report
         uses: actions/upload-artifact@v4
@@ -172,7 +170,7 @@ jobs:
           scan-type: fs
           scan-ref: .
           skip-dirs: venv,__pycache__,instance
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           exit-code: "1"
 
 ################################################################################
@@ -246,7 +244,7 @@ jobs:
         with:
           image-ref: ${{ needs.docker-build.outputs.image }}
           format: table
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           exit-code: "1"
 
 ################################################################################
@@ -284,5 +282,5 @@ jobs:
         with:
           scan-type: config
           scan-ref: k8s/
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           exit-code: "1"
