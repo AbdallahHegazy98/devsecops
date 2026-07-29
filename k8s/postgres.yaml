@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: devsecops
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: postgres
+
+  template:
+    metadata:
+      labels:
+        app: postgres
+
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17
+
+        ports:
+        - containerPort: 5432
+
+        env:
+        - name: POSTGRES_DB
+          value: notes
+
+        - name: POSTGRES_USER
+          value: notesuser
+
+        - name: POSTGRES_PASSWORD
+          value: notespassword
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: postgres-service
+  namespace: devsecops
+
+spec:
+  selector:
+    app: postgres
+
+  ports:
+    - port: 5432
+      targetPort: 5432
